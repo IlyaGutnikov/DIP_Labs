@@ -5,29 +5,35 @@ import matplotlib.patches as mpatches
 from skimage import data, io, filters, color, feature, morphology
 from skimage.measure import label, regionprops
 from skimage.color import label2rgb
-from skimage.filters import roberts, sobel, prewitt
 
-image1 = np.tri(10, 10, 0)
-image2 = color.rgb2gray(image1)
+#image = np.tri(10, 10, 0)
+# Загрузка цифрового изображения
+image = io.imread("images/5.png")
+image_halftone = color.rgb2gray(image)
 
-edges1 = filters.roberts(image2)
-print(edges1.astype(bool))
+# Обработка фильтром
+edges = filters.roberts(image_halftone)
+print(edges.astype(bool))
 
-label_image = label(edges1.astype(bool))
+# Отметка интересеющих областей
+label_image = label(edges.astype(bool))
 print(label_image)
-image_label_overlay = label2rgb(label_image, image=edges1)
-
+# Наслойка отметок на картинку с фильтром
+image_label_overlay = label2rgb(label_image, image=edges)
+# Создает дополнительную фигуру
 fig, ax = plt.subplots(figsize=(10, 6))
-ax.imshow(image1)
+ax.imshow(image)
 
 coord = {}
 i = 1
+
+# В цикде проходтимся по всем местам, где есть отметки
 for region in regionprops(label_image):
 
-    # take regions with large enough areas
-    if region.area >= 1:
+    # Получаем регионы с дотаточным количеством отметок
+    if region.area >= 500:
 
-        # draw rectangle around segmented objects
+        # Рисуем на них прямоугольники
         minr, minc, maxr, maxc = region.bbox
         rect = mpatches.Rectangle((minc, minr), maxc - minc, maxr - minr,
         fill=False, edgecolor='green', linewidth=1)
@@ -39,7 +45,7 @@ for region in regionprops(label_image):
         ax.text(x0, y0, str(i), fontsize=12)
 
         print("[%s] x0: %s y0: %s\n" % (i, x0, y0,))
-        i+=1
+        i += 1
 
 ax.set_axis_off()
 plt.tight_layout()

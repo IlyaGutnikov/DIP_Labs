@@ -13,6 +13,8 @@ image_halftone = color.rgb2gray(image)
 
 # Обработка фильтром
 edges = filters.roberts(image_halftone)
+#io.imshow(edges)
+#io.show()
 print(edges.astype(bool))
 
 # Отметка интересеющих областей
@@ -30,8 +32,9 @@ i = 1
 # В цикде проходтимся по всем местам, где есть отметки
 for region in regionprops(label_image):
 
-    # Получаем регионы с дотаточным количеством отметок
-    if region.area >= 500:
+    # Получаем регионы с доcтаточным количеством отметок,
+    # где отметка больше определенного размера
+    if region.area >= 5:
 
         # Рисуем на них прямоугольники
         minr, minc, maxr, maxc = region.bbox
@@ -41,6 +44,7 @@ for region in regionprops(label_image):
 
         y0, x0 = region.centroid
 
+        # для маркера
         ax.plot(x0, y0, 'rs', markersize=10)
         ax.text(x0, y0, str(i), fontsize=12)
 

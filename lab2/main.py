@@ -59,4 +59,16 @@ def getDishFromPicture(pictureName, r1, r2, g1, g2, b1, b2, regionSize, dishName
     plt.tight_layout()
     plt.show()
 
-getDishFromPicture("Меню (1).jpg", 140, 190, 60, 110, 30, 55, 500, "Салат с морковью")
+def getDishesFromPicture(pictureName):
+    getDishFromPicture(pictureName, 140, 190, 60, 110, 30, 55, 500, "Салат с морковью")
+    getDishFromPicture(pictureName, 76, 90, 57, 71, 36, 59, 200, "Черный хлеб")
+    getDishFromPicture(pictureName, 140, 188, 125, 180, 82, 143, 2200, "Пюре картофельное")
+    getDishFromPicture(pictureName, 131, 162, 124, 156, 101, 137, 200, "Рыба")
+    getDishFromPicture(pictureName, 120, 141, 93, 110, 30, 35, 200, "Горчица")
+    getDishFromPicture(pictureName, 118, 138, 45, 67, 1, 11, 200, "Компот абрикосовый")
+    getDishFromPicture(pictureName, 57, 83, 11, 27, 14, 27, 200, "Кетчуп")
+    getDishFromPicture(pictureName, 82, 91, 48, 59, 28, 36, 500, "Котлета")
+    getDishFromPicture(pictureName, 139, 148, 97, 121, 44, 62, 200, "Суп гороховый")
+    getDishFromPicture(pictureName, 140, 197, 92, 175, 47, 150, 1200, "Шашлык куриный")
+
+getDishesFromPicture("Меню (3).jpg")

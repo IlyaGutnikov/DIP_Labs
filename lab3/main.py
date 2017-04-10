@@ -1,7 +1,10 @@
 import numpy as np
+from matplotlib import pyplot as plt
 from skimage import data, io, color
 from skimage.transform import integral_image
-import collections
+from skimage.measure import label, regionprops
+from skimage.color import label2rgb
+import matplotlib.patches as mpatches
 
 def haar_feature(i, x, y, f, s):
 
@@ -38,22 +41,64 @@ def haar_feature(i, x, y, f, s):
     #print(haar_feature_val)
     return haar_feature_val
 
-image = io.imread("images/001.jpg")
+image = io.imread("images/002.jpg")
 
 image_halftone = color.rgb2gray(image)
 
 im = integral_image(image_halftone)
 
-#print(im)
-
-Matrix = collections.defaultdict(float)
-
-haar_feature(im, 995, 995, 0, 1)
+matrix = np.ndarray(shape=(len(im), len(im[0])))
+matrix_bool = np.ndarray(shape=(len(im), len(im[0])), dtype=bool)
 
 for i in range(len(im) - 5):
     for j in range(len(im[i]) - 5):
-        Matrix[i, j] = haar_feature(im, i, j, 0, 1)
+        # получили матрицу значений Хаара
+        matrix[i, j] = haar_feature(im, i, j, 0, 1)
 
-print(Matrix)
+filter_number_min = 50
+filter_number_max = 80
 
-io.imshow(image)
+for i in range(len(matrix)):
+    for j in range(len(matrix[i])):
+        if ((((matrix[i][j])*1000) > filter_number_min) and (((matrix[i][j])*1000) < filter_number_max)):
+            matrix_bool[i, j] = True
+        else:
+            matrix_bool[i, j] = False
+
+
+label_image = label(matrix_bool)
+# Наслойка отметок на картинку с фильтром
+image_label_overlay = label2rgb(label_image, image=image_halftone)
+# Создает дополнительную фигуру
+fig, ax = plt.subplots(figsize=(10, 6))
+ax.imshow(image)
+
+coord = {}
+i = 1
+
+# В цикде проходтимся по всем местам, где есть отметки
+for region in regionprops(label_image):
+
+    # Получаем регионы с доcтаточным количеством отметок,
+    # где отметка больше определенного размера
+    if region.area >= 5:
+
+        # Рисуем на них прямоугольники
+        minr, minc, maxr, maxc = region.bbox
+        rect = mpatches.Rectangle((minc, minr), maxc - minc, maxr - minr,
+        fill=False, edgecolor='green', linewidth=1)
+        ax.add_patch(rect)
+
+        y0, x0 = region.centroid
+
+        # для маркера
+        ax.plot(x0, y0, 'rs', markersize=10)
+        ax.text(x0, y0, str(i), fontsize=12)
+
+        print("[%s] x0: %s y0: %s\n" % (i, x0, y0,))
+        i += 1
+
+ax.set_axis_off()
+plt.tight_layout()
+plt.show()
+

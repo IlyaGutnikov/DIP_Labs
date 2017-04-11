@@ -41,23 +41,28 @@ def haar_feature(i, x, y, f, s):
     #print(haar_feature_val)
     return haar_feature_val
 
+# Загрузка изображения
 image = io.imread("images/002.jpg")
-
+# Перевод в полутоновый формат
 image_halftone = color.rgb2gray(image)
-
+# Специальный формат изображения для нахождения признаков
 im = integral_image(image_halftone)
 
+# Матрицы для нахождения сохраненых признаков
 matrix = np.ndarray(shape=(len(im), len(im[0])))
 matrix_bool = np.ndarray(shape=(len(im), len(im[0])), dtype=bool)
 
+# Получение признаков Хаара
 for i in range(len(im) - 5):
     for j in range(len(im[i]) - 5):
         # получили матрицу значений Хаара
         matrix[i, j] = haar_feature(im, i, j, 0, 1)
 
+# Фильтр для признаков Хаара
 filter_number_min = 50
 filter_number_max = 80
 
+# Применение фильтра к вычесленным значениям
 for i in range(len(matrix)):
     for j in range(len(matrix[i])):
         if ((((matrix[i][j])*1000) > filter_number_min) and (((matrix[i][j])*1000) < filter_number_max)):
@@ -65,7 +70,7 @@ for i in range(len(matrix)):
         else:
             matrix_bool[i, j] = False
 
-
+# Создание слоя для отметок
 label_image = label(matrix_bool)
 # Наслойка отметок на картинку с фильтром
 image_label_overlay = label2rgb(label_image, image=image_halftone)
@@ -101,4 +106,3 @@ for region in regionprops(label_image):
 ax.set_axis_off()
 plt.tight_layout()
 plt.show()
-
